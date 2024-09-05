@@ -4,15 +4,20 @@
 #include <stdbool.h>
 #include "types.h"
 
-typedef struct RBT RBT;
+typedef struct node RBT;
 
 
-RBT *rbt_construct();
+RBT *RBT_construct();
 
-void rbt_destruct(RBT *rbt);
+void RBT_destruct(RBT *rbt, void (*free_value)(Value)) ;
 
-void rbt_insert(RBT *rbt, void *key, Value value);
+RBT *RBT_insert(RBT *rbt, char *key, Value val, CompareFunc comp);
 
-Value rbt_search(RBT *rbt, void *key);
+Value RBT_search(RBT *rbt, char *key, CompareFunc comp);
+
+bool RBT_contains_key(RBT *rbt, char *key, CompareFunc comp);
+
+void RBT_print_keys(RBT *rbt);
+
 
 #endif // _RBT_H_
