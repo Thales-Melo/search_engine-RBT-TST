@@ -4,14 +4,22 @@
 typedef struct node TST;
 
 #include "types.h"
+#include <stdbool.h>
 
 
-TST *tst_construct();
+TST *TST_construct();
 
-void tst_destruct(TST *tst);
+
+void TST_destruct(TST* t, void (*free_value)(Value));
 
 TST* TST_insert(TST* t, const char* key , Value val);
 
 Value TST_search(TST* t, const char* key);
+
+bool TST_contains(TST* t, const char* key);
+
+void TST_print_keys(TST* t);
+
+
 
 #endif // _TST_H_
