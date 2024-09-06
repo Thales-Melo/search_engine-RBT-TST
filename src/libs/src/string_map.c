@@ -40,6 +40,29 @@ RBT *string_map_search(StringMap *sm, const char *word) {
     return (RBT*) RBT_search(sm->map, (char *)word, strcmp);
 }
 
+void string_map_print(StringMap *sm) {
+    // Iterar sobre o RBT e imprimir cada palavra e suas páginas
+    RBTIterator *iter = RBT_iterator_create(sm->map);
+    while (RBT_iterator_valid(iter)) {
+        char *word = RBT_iterator_key(iter);
+        printf("Key %s\n", word);
+        RBT *pages = (RBT*) RBT_iterator_value(iter);
+        RBT_print_keys(pages);
+        printf("\n");
+        RBT_iterator_next(iter);
+    }
+    RBT_iterator_destroy(iter);
+}
+
+void string_map_insert(RBT *sm_map, RBT *pages, char *page_name, char *word) {
+    // Se a página não estiver no RBT da palavra, inserir
+    if (!RBT_contains_key(pages, page_name, strcmp)) {
+        //printf("Inserindo %s em %s\n", page_name, word_token);
+        pages = RBT_insert(pages, page_name, SPECIAL_NULL_VALUE, strcmp);
+        sm_map = RBT_insert(sm_map, word, pages, strcmp);
+    }
+}
+
 StringMap *string_map_build(char *main_dir, StopWord *stop_words) {
     StringMap *sm = string_map_construct();
     
@@ -48,7 +71,6 @@ StringMap *string_map_build(char *main_dir, StopWord *stop_words) {
     FILE *index_file = fopen(index_dir, "r");
     if (index_file == NULL)
         exit(printf("Error string_map_build: failed to open file: %s\n", index_dir));
-
 
     char *page_name = NULL, *line_from_page = NULL;
     size_t size_p = 0, size_l = 0;
@@ -76,26 +98,24 @@ StringMap *string_map_build(char *main_dir, StopWord *stop_words) {
                     // Verificar se a palavra já está no mapa
                     RBT *pages = string_map_search(sm, word_token);
 
-                    // Se a palavra não está no mapa, criar um novo RBT
+                    // Se a palavra não estiver no mapa, criar um novo RBT para as páginas
                     if (pages == NULL) {
-                        pages = RBT_construct();
                         sm->map = RBT_insert(sm->map, word_token, pages, strcmp);
                     }
 
-                    // Inserir a página no RBT da palavra se a página não estiver lá
-                    if (!RBT_contains_key(pages, page_name, strcmp)) {
-                        pages = RBT_insert(pages, page_name, SPECIAL_NULL_VALUE, strcmp);
-                    }
+                    // Inserir a página no RBT da palavra (se já não estiver)
+                    string_map_insert(sm->map, pages, page_name, word_token);
                 }
                 word_token = strtok(NULL, " \n\t");
             }
-            //free(line_from_page); Problema ao liberar a memória
         }
-        //free(page_name);
         fclose(page_file);
     }
+    free(page_name);
+    free(line_from_page);
     fclose(index_file);
     printf("String map built.\n");
-
+    //RBT_print_keys(sm->map);
+    //string_map_print(sm);
     return sm;
 }
