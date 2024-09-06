@@ -4,115 +4,180 @@
 
 #include "../include/rbt.h"
 
-#define RED true
-#define BLACK false
-
-typedef struct RB_Node RB_Node;
-struct RB_Node {
-    void *key;
+struct node {
+    char *key;
     Value value;
     bool color;
-    RB_Node *l, *r;
+    RBT *l, *r;
 };
 
-struct RBT {
-    RB_Node *root;
-    int size;
-};
+RBT *RBT_construct() {
+    return NULL;
+}
 
+void RBT_destruct(RBT *rbt, void (*free_value)(Value)) {
+    if (rbt == NULL)
+        return;
+    RBT_destruct(rbt->l, free_value);
+    RBT_destruct(rbt->r, free_value);
+    free(rbt->key);
+    if (free_value != NULL)
+        free_value(rbt->value);
+    free(rbt);
+}
 
-RB_Node *rb_node_construct(void *key, Value value, bool color) {
-    RB_Node *node = malloc(sizeof(RB_Node));
+RBT *RBT_create_node(char *key, Value value, bool color) {
+    RBT *node = malloc(sizeof(RBT));
     if (node == NULL)
-        exit(printf("Error rb_node_construct: failed to allocate memory.\n"));
-    node->key = key;
+        exit(printf("Error RBT_create_node: failed to allocate memory.\n"));
+    node->key = strdup(key);
     node->value = value;
     node->color = color;
     node->l = node->r = NULL;
     return node;
 }
 
-void rb_node_destruct(RB_Node *node) {
-    if (node == NULL)
-        return;
-    rb_node_destruct(node->l);
-    rb_node_destruct(node->r);
-    free(node);
-}
-
-RBT *rbt_construct() {
-    RBT *rbt = malloc(sizeof(RBT));
-    if (rbt == NULL)
-        exit(printf("Error rbt_construct: failed to allocate memory.\n"));
-    rbt->root = NULL;
-    rbt->size = 0;
-    return rbt;
-}
-
-void rbt_destruct(RBT *rbt) {
-    if (rbt == NULL)
-        return;
-    rb_node_destruct(rbt->root);
-    free(rbt);
-}
-
-bool is_red(RB_Node *node) {
+bool is_red(RBT *node) {
     return node == NULL ? BLACK : node->color;
 }
 
-RB_Node *rotate_left(RB_Node *node) {
-    RB_Node *x = node->r;
-    node->r = x->l;
-    x->l = node;
-    x->color = node->color;
-    node->color = RED;
+void color_flip(RBT *node) {
+    node->color = !node->color;
+    node->l->color = !node->l->color;
+    node->r->color = !node->r->color;
+}
+
+RBT *rotate_left(RBT *h) {
+    RBT *x = h->r;
+    h->r = x->l;
+    x->l = h;
+    x->color = h->color;
+    h->color = RED;
     return x;
 }
 
-RB_Node *rotate_right(RB_Node *node) {
-    RB_Node *x = node->l;
-    node->l = x->r;
-    x->r = node;
-    x->color = node->color;
-    node->color = RED;
+RBT *rotate_right(RBT *h) {
+    RBT *x = h->l;
+    h->l = x->r;
+    x->r = h;
+    x->color = h->color;
+    h->color = RED;
     return x;
 }
 
-void flip_colors(RB_Node *node) {
-    node->color = RED;
-    node->l->color = BLACK;
-    node->r->color = BLACK;
+RBT *RBT_insert(RBT *h, char *key, Value value, int (*cmp)(const char *, const char *)) {
+    if (h == NULL) { return RBT_create_node(key, value, RED); }
+
+    int cmp_result = cmp(key, h->key);
+    if (cmp_result < 0)                 { h->l = RBT_insert(h->l, key, value, cmp); } 
+    else if (cmp_result > 0)            { h->r = RBT_insert(h->r, key, value, cmp); } 
+    else                                { h->value = value; }
+
+    if (is_red(h->r) && !is_red(h->l))      { h = rotate_left(h); }
+    if (is_red(h->l) && is_red(h->l->l))    { h = rotate_right(h); }
+    if (is_red(h->l) && is_red(h->r))       { color_flip(h); }
+
+    return h;
 }
 
-RB_Node *rec_rbt_insert(RBT *rbt, RB_Node *node, void *key, Value value) {
-    if (node == NULL) {
-        rbt->size++;
-        return rb_node_construct(key, value, RED);
+Value RBT_search(RBT *rbt, char *key, CompareFunc comp) {
+    if (rbt == NULL)    return NULL;
+    int cmp = comp(key, rbt->key);
+    if (cmp < 0)            return RBT_search(rbt->l, key, comp);
+    else if (cmp > 0)       return RBT_search(rbt->r, key, comp);
+    else                    return rbt->value;
+}
+
+bool RBT_contains_key(RBT *rbt, char *key, CompareFunc comp) {
+    return RBT_search(rbt, key, comp) != NULL;
+}
+
+void RBT_print_keys(RBT *rbt) {
+    if (rbt == NULL) return;
+    RBT_print_keys(rbt->l);
+    printf("%s\n", rbt->key);
+    RBT_print_keys(rbt->r);
+}
+
+
+struct RBTIterator {
+    RBT *current;
+    RBT **stack;
+    int stack_size;
+    int stack_capacity;
+};
+
+RBTIterator* RBT_iterator_create(RBT *root) {
+    RBTIterator *iter = (RBTIterator*) malloc(sizeof(RBTIterator));
+    if (iter == NULL) {
+        exit(printf("Error: Failed to allocate memory for RBTIterator.\n"));
+    }
+    iter->current = root;
+    iter->stack_size = 0;
+    iter->stack_capacity = 100; // Capacidade inicial da pilha
+    iter->stack = (RBT**) malloc(iter->stack_capacity * sizeof(RBT*));
+    if (iter->stack == NULL)
+        exit(printf("Error: Failed to allocate memory for RBTIterator stack.\n"));
+
+    // Avança até o menor elemento
+    while (iter->current != NULL && iter->current->l != NULL) {
+        iter->stack[iter->stack_size++] = iter->current;
+        iter->current = iter->current->l;
     }
 
-    if (key < node->key)        node->l = rec_rbt_insert(rbt, node->l, key, value);
-    else if (key > node->key)   node->r = rec_rbt_insert(rbt, node->r, key, value);
-    else                        node->value = value;
-
-    if (is_red(node->r) && !is_red(node->l))        node = rotate_left(node);
-    if (is_red(node->l) && is_red(node->l->l))       node = rotate_right(node);
-    if (is_red(node->l) && is_red(node->r))          flip_colors(node);
-
-    return node;
+    return iter;
 }
 
-void rbt_insert(RBT *rbt, void *key, Value value) {
-    rbt->root = rec_rbt_insert(rbt, rbt->root, key, value);
-    rbt->root->color = BLACK;
+bool RBT_iterator_next(RBTIterator *iter) {
+    if (iter->current == NULL) {
+        return false;
+    }
+
+    if (iter->current->r != NULL) {
+        iter->current = iter->current->r;
+        while (iter->current->l != NULL) {
+            if (iter->stack_size == iter->stack_capacity) {
+                iter->stack_capacity *= 2;
+                iter->stack = (RBT**) realloc(iter->stack, iter->stack_capacity * sizeof(RBT*));
+                if (iter->stack == NULL)
+                    exit(printf("Error: Failed to reallocate memory for RBTIterator stack.\n"));
+            
+            }
+            iter->stack[iter->stack_size++] = iter->current;
+            iter->current = iter->current->l;
+        }
+    } else if (iter->stack_size > 0) {
+        iter->current = iter->stack[--iter->stack_size];
+    } else {
+        iter->current = NULL;
+    }
+
+    return iter->current != NULL;
 }
 
-Value rec_rbt_search(RB_Node *node, void *key) {
-    if (node == NULL)           return NULL;
-    if (key < node->key)        return rec_rbt_search(node->l, key);
-    else if (key > node->key)   return rec_rbt_search(node->r, key);
-    else                        return node->value;
+Value RBT_iterator_value(RBTIterator *iter) {
+    if (iter->current == NULL) {
+        printf("Error: Invalid iterator.\n");
+        return NULL;
+    }
+    return iter->current->value;
 }
 
-Value rbt_search(RBT *rbt, void *key) {
-    return rec_rbt_search(rbt->root, key);
+bool RBT_iterator_valid(RBTIterator *iter) {
+    return iter->current != NULL;
+}
+
+char* RBT_iterator_key(RBTIterator *iter) {
+    if (iter->current == NULL) {
+        printf("Error: Invalid iterator.\n");
+        return NULL;
+    }
+    return iter->current->key;
+}
+
+void RBT_iterator_destroy(RBTIterator *iter) {
+    if (iter != NULL) {
+        free(iter->stack);
+        free(iter);
+    }
 }

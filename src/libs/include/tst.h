@@ -1,18 +1,16 @@
 #if !defined(_TST_H_)
 #define _TST_H_
 
-typedef struct TST TST;
-
 #include "types.h"
-#include "string.h"
+#include <stdbool.h>
 
+typedef struct node TST;
 
-TST *tst_construct();
-
-void tst_destruct(TST *tst);
-
-void TST_insert(TST* t, String* key , Value val);
-
-Value TST_search(TST* t, String* key);
+TST *TST_construct();
+void TST_destruct(TST* t, void (*free_value)(Value));
+TST* TST_insert(TST* t, const char* key , Value val);
+Value TST_search(TST* t, const char* key);
+bool TST_contains(TST* t, const char* key);
+void TST_print_keys(TST* t);
 
 #endif // _TST_H_

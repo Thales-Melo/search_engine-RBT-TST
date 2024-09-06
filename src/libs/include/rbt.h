@@ -4,15 +4,24 @@
 #include <stdbool.h>
 #include "types.h"
 
-typedef struct RBT RBT;
+typedef struct node RBT;
+
+RBT *RBT_construct();
+void RBT_destruct(RBT *rbt, void (*free_value)(Value)) ;
+RBT *RBT_insert(RBT *rbt, char *key, Value val, CompareFunc comp);
+Value RBT_search(RBT *rbt, char *key, CompareFunc comp);
+bool RBT_contains_key(RBT *rbt, char *key, CompareFunc comp);
+void RBT_print_keys(RBT *rbt);
 
 
-RBT *rbt_construct();
 
-void rbt_destruct(RBT *rbt);
+typedef struct RBTIterator RBTIterator;
 
-void rbt_insert(RBT *rbt, void *key, Value value);
-
-Value rbt_search(RBT *rbt, void *key);
+RBTIterator* RBT_iterator_create(RBT *root);
+Value RBT_iterator_value(RBTIterator *iter);
+bool RBT_iterator_next(RBTIterator *iter);
+bool RBT_iterator_valid(RBTIterator *iter);
+char* RBT_iterator_key(RBTIterator *iter);
+void RBT_iterator_destroy(RBTIterator *iter);
 
 #endif // _RBT_H_
