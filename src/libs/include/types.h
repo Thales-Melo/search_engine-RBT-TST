@@ -6,10 +6,9 @@
 #define Value void*
 #define NULL_Value NULL
 #define SPECIAL_NULL_VALUE ((void*)1) // Diferenciar de NULL_Value
-typedef void* Key;
+
 #define RED true
 #define BLACK false
-
 typedef int (*CompareFunc)(const char *v1, const char *v2);
 
 #endif // _TYPES_H_)

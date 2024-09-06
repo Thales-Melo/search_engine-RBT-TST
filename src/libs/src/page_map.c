@@ -71,7 +71,8 @@ PageMap *build_link_pages(char *main_dir) {
                 // Pegar a lista de páginas de saída
                 out_pages = page_get_out_links(current_page);
             } else if (tok_counter == 1) {
-                // Numero de links de saída. Setar a quantidade de links de saída
+                // Numero de links de saída. 
+                //Setar a quantidade de links de saída
                 page_set_num_out_links(current_page, atoi(token));
             } else {
                 // Páginas que a página atual aponta, ou seja, páginas de saída

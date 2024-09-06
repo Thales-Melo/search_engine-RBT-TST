@@ -45,10 +45,10 @@ TST* rec_insert(TST* t, const char* key, Value val, int d, int len) {
         t = create_node();
         t->c = c;
     }
-    if (c < t->c)                       t->l = rec_insert(t->l, key, val, d, len);
-    else if (c > t->c)                  t->r = rec_insert(t->r, key, val, d, len);
-    else if (d < len - 1)               t->m = rec_insert(t->m, key, val, d+1, len);
-    else                                t->val = val;
+    if (c < t->c)                      { t->l = rec_insert(t->l, key, val, d, len); }
+    else if (c > t->c)                 { t->r = rec_insert(t->r, key, val, d, len); }
+    else if (d < len - 1)              { t->m = rec_insert(t->m, key, val, d+1, len); }
+    else                               { t->val = val; }
     return t;
 }
 

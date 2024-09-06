@@ -66,28 +66,16 @@ RBT *rotate_right(RBT *h) {
 }
 
 RBT *RBT_insert(RBT *h, char *key, Value value, int (*cmp)(const char *, const char *)) {
-    if (h == NULL) {
-        return RBT_create_node(key, value, RED);
-    }
+    if (h == NULL) { return RBT_create_node(key, value, RED); }
 
     int cmp_result = cmp(key, h->key);
-    if (cmp_result < 0) {
-        h->l = RBT_insert(h->l, key, value, cmp);
-    } else if (cmp_result > 0) {
-        h->r = RBT_insert(h->r, key, value, cmp);
-    } else {
-        h->value = value;
-    }
+    if (cmp_result < 0)                 { h->l = RBT_insert(h->l, key, value, cmp); } 
+    else if (cmp_result > 0)            { h->r = RBT_insert(h->r, key, value, cmp); } 
+    else                                { h->value = value; }
 
-    if (is_red(h->r) && !is_red(h->l)) {
-        h = rotate_left(h);
-    }
-    if (is_red(h->l) && is_red(h->l->l)) {
-        h = rotate_right(h);
-    }
-    if (is_red(h->l) && is_red(h->r)) {
-        color_flip(h);
-    }
+    if (is_red(h->r) && !is_red(h->l))      { h = rotate_left(h); }
+    if (is_red(h->l) && is_red(h->l->l))    { h = rotate_right(h); }
+    if (is_red(h->l) && is_red(h->r))       { color_flip(h); }
 
     return h;
 }
@@ -95,9 +83,9 @@ RBT *RBT_insert(RBT *h, char *key, Value value, int (*cmp)(const char *, const c
 Value RBT_search(RBT *rbt, char *key, CompareFunc comp) {
     if (rbt == NULL)    return NULL;
     int cmp = comp(key, rbt->key);
-    if (cmp < 0)        return RBT_search(rbt->l, key, comp);
-    else if (cmp > 0)   return RBT_search(rbt->r, key, comp);
-    else                return rbt->value;
+    if (cmp < 0)            return RBT_search(rbt->l, key, comp);
+    else if (cmp > 0)       return RBT_search(rbt->r, key, comp);
+    else                    return rbt->value;
 }
 
 bool RBT_contains_key(RBT *rbt, char *key, CompareFunc comp) {
@@ -119,7 +107,6 @@ struct RBTIterator {
     int stack_capacity;
 };
 
-
 RBTIterator* RBT_iterator_create(RBT *root) {
     RBTIterator *iter = (RBTIterator*) malloc(sizeof(RBTIterator));
     if (iter == NULL) {
@@ -129,9 +116,8 @@ RBTIterator* RBT_iterator_create(RBT *root) {
     iter->stack_size = 0;
     iter->stack_capacity = 100; // Capacidade inicial da pilha
     iter->stack = (RBT**) malloc(iter->stack_capacity * sizeof(RBT*));
-    if (iter->stack == NULL) {
+    if (iter->stack == NULL)
         exit(printf("Error: Failed to allocate memory for RBTIterator stack.\n"));
-    }
 
     // Avança até o menor elemento
     while (iter->current != NULL && iter->current->l != NULL) {
@@ -141,7 +127,6 @@ RBTIterator* RBT_iterator_create(RBT *root) {
 
     return iter;
 }
-
 
 bool RBT_iterator_next(RBTIterator *iter) {
     if (iter->current == NULL) {
@@ -154,9 +139,9 @@ bool RBT_iterator_next(RBTIterator *iter) {
             if (iter->stack_size == iter->stack_capacity) {
                 iter->stack_capacity *= 2;
                 iter->stack = (RBT**) realloc(iter->stack, iter->stack_capacity * sizeof(RBT*));
-                if (iter->stack == NULL) {
+                if (iter->stack == NULL)
                     exit(printf("Error: Failed to reallocate memory for RBTIterator stack.\n"));
-                }
+            
             }
             iter->stack[iter->stack_size++] = iter->current;
             iter->current = iter->current->l;
