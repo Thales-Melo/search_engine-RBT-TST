@@ -30,7 +30,7 @@ RBT *RBT_create_node(char *key, Value value, bool color) {
     RBT *node = malloc(sizeof(RBT));
     if (node == NULL)
         exit(printf("Error RBT_create_node: failed to allocate memory.\n"));
-    node->key = key;
+    node->key = strdup(key);
     node->value = value;
     node->color = color;
     node->l = node->r = NULL;

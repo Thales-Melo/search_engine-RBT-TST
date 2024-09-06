@@ -30,6 +30,10 @@ void stop_word_insert(StopWord *sw, const char *word) {
     sw->sw = TST_insert(sw->sw, word, SPECIAL_NULL_VALUE);
 }
 
+bool stop_word_contains(StopWord *sw, const char *word) {
+    return TST_search(sw->sw, word) != NULL;
+}
+
 StopWord *stop_word_read(char *main_dir) {
     char sw_input_file[256];
     sprintf(sw_input_file, "%s/%s", main_dir, STOP_WORD_DIR);
