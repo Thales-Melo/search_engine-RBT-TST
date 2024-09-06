@@ -110,3 +110,89 @@ void RBT_print_keys(RBT *rbt) {
     printf("%s\n", rbt->key);
     RBT_print_keys(rbt->r);
 }
+
+
+struct RBTIterator {
+    RBT *current;
+    RBT **stack;
+    int stack_size;
+    int stack_capacity;
+};
+
+
+RBTIterator* RBT_iterator_create(RBT *root) {
+    RBTIterator *iter = (RBTIterator*) malloc(sizeof(RBTIterator));
+    if (iter == NULL) {
+        exit(printf("Error: Failed to allocate memory for RBTIterator.\n"));
+    }
+    iter->current = root;
+    iter->stack_size = 0;
+    iter->stack_capacity = 100; // Capacidade inicial da pilha
+    iter->stack = (RBT**) malloc(iter->stack_capacity * sizeof(RBT*));
+    if (iter->stack == NULL) {
+        exit(printf("Error: Failed to allocate memory for RBTIterator stack.\n"));
+    }
+
+    // Avança até o menor elemento
+    while (iter->current != NULL && iter->current->l != NULL) {
+        iter->stack[iter->stack_size++] = iter->current;
+        iter->current = iter->current->l;
+    }
+
+    return iter;
+}
+
+
+bool RBT_iterator_next(RBTIterator *iter) {
+    if (iter->current == NULL) {
+        return false;
+    }
+
+    if (iter->current->r != NULL) {
+        iter->current = iter->current->r;
+        while (iter->current->l != NULL) {
+            if (iter->stack_size == iter->stack_capacity) {
+                iter->stack_capacity *= 2;
+                iter->stack = (RBT**) realloc(iter->stack, iter->stack_capacity * sizeof(RBT*));
+                if (iter->stack == NULL) {
+                    exit(printf("Error: Failed to reallocate memory for RBTIterator stack.\n"));
+                }
+            }
+            iter->stack[iter->stack_size++] = iter->current;
+            iter->current = iter->current->l;
+        }
+    } else if (iter->stack_size > 0) {
+        iter->current = iter->stack[--iter->stack_size];
+    } else {
+        iter->current = NULL;
+    }
+
+    return iter->current != NULL;
+}
+
+Value RBT_iterator_value(RBTIterator *iter) {
+    if (iter->current == NULL) {
+        printf("Error: Invalid iterator.\n");
+        return NULL;
+    }
+    return iter->current->value;
+}
+
+bool RBT_iterator_valid(RBTIterator *iter) {
+    return iter->current != NULL;
+}
+
+char* RBT_iterator_key(RBTIterator *iter) {
+    if (iter->current == NULL) {
+        printf("Error: Invalid iterator.\n");
+        return NULL;
+    }
+    return iter->current->key;
+}
+
+void RBT_iterator_destroy(RBTIterator *iter) {
+    if (iter != NULL) {
+        free(iter->stack);
+        free(iter);
+    }
+}
