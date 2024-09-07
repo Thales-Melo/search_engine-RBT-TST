@@ -95,8 +95,9 @@ void run_search_engine(StringMap *sm, StopWord *stop_words, int num_pages) {
             token = strtok(NULL, " \n");
         }
 
+        qsort(intersection_pages, intersection_index, sizeof(Page *), pages_comparator);
         display_search_results(query, intersection_pages, intersection_index, num_terms);
-        
+
         // Reseta o índice de interseção para a próxima consulta
         intersection_index = 0;
         free(query);
