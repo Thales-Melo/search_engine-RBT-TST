@@ -6,7 +6,8 @@
 #include "../libs/include/stop_word.h"
 #include "../libs/include/string_map.h"
 #include "../libs/include/page_map.h"
-#include "../libs/include/search_engine.h"
+#include "../libs/include/page_rank.h"
+
 
 int main(int argc, char *argv[]) {
     if (argc != 2)

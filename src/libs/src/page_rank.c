@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../include/search_engine.h"
+#include "../include/page_rank.h"
 #include "../include/page_map.h"
 #include "../include/page.h"
 #include "../include/rbt.h"
