@@ -24,5 +24,6 @@ void page_insert_in_link(Page *page, Page *in);
 void page_insert_out_link(Page *page, Page *out);
 void page_update_last_page_rank(Page *page);
 void page_print(Page *page);
+int pages_comparator(const void *p1, const void *p2);
 
 #endif // _PAGE_H_

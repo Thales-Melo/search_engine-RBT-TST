@@ -102,7 +102,6 @@ void page_insert_out_link(Page *page, Page *out) {
     page->out_links = RBT_insert(page->out_links, page_get_name(out), out, strcmp);
 }
 
-
 void page_update_last_page_rank(Page *page) {
     page->last_page_rank = page->page_rank;
 }
@@ -110,4 +109,17 @@ void page_update_last_page_rank(Page *page) {
 void page_print(Page *page) {
     // Impressão das paginas de saida
     RBT_print_keys(page->out_links);
+}
+
+int pages_comparator(const void *p1, const void *p2) {
+    Page* (*page1) = (Page**) p1;
+    Page* (*page2) = (Page**) p2;
+
+    if((*page1) == NULL && (*page2) == NULL)              return 0; 
+    else if((*page1) == NULL)                             return 1; 
+    else if((*page2) == NULL)                             return -1; 
+
+    if((*page1)->page_rank > (*page2)->page_rank)         return -1;
+    else if((*page1)->page_rank < (*page2)->page_rank)    return 1;
+    else                                                  return 0;
 }

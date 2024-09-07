@@ -7,6 +7,7 @@
 #include "../libs/include/string_map.h"
 #include "../libs/include/page_map.h"
 #include "../libs/include/page_rank.h"
+#include "../libs/include/search_engine.h"
 
 
 int main(int argc, char *argv[]) {
@@ -26,6 +27,7 @@ int main(int argc, char *argv[]) {
     StringMap *sm = string_map_build(argv[1], stop_words, pm, &num_pages);
 
     calculate_page_ranks(num_pages, pm);
+    run_search_engine(sm, stop_words, num_pages);
 
     stop_word_destruct(stop_words);
     string_map_destruct(sm);
