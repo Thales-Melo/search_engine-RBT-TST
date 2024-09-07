@@ -13,8 +13,9 @@ struct Page {
     double last_page_rank;
     int num_out_links;
     int num_in_links;
-    RBT *in_links; // <Key: page_name, Value: NULL>
-    RBT *out_links; // <Key: page_name, Value: NULL>
+    int intersection_counter;
+    RBT *in_links; // <Key: page_name, Value: *page> Não é cópia, mas sim referencia.
+    RBT *out_links; // <Key: page_name, Value: *page> Não é cópia, mas sim referencia.
 };
 
 
@@ -27,6 +28,7 @@ Page* page_construct(char *page_name) {
     page->last_page_rank = 0.0;
     page->num_out_links = 0;
     page->num_in_links = 0;
+    page->intersection_counter = 0;
     page->in_links = RBT_construct();
     page->out_links = RBT_construct();
     return page;
@@ -51,6 +53,38 @@ char *page_get_name(Page *page) {
     return page->page_name;
 }
 
+double page_get_page_rank(Page *page) {
+    return page->page_rank;
+}
+
+double page_get_last_page_rank(Page *page) {
+    return page->last_page_rank;
+}
+
+int page_get_num_in_links(Page *page) {
+    return page->num_in_links;
+}
+
+int page_get_num_out_links(Page *page) {
+    return page->num_out_links;
+}
+
+int page_get_intersection_counter(Page *page) {
+    return page->intersection_counter;
+}
+
+void page_set_intersection_counter(Page *page, int value) {
+    page->intersection_counter = value;
+}
+
+void page_set_page_rank(Page *page, double pr) {
+    page->page_rank = pr;
+}
+
+void page_set_last_page_rank(Page *page, double last_pr) {
+    page->last_page_rank = last_pr;
+}
+
 void page_set_num_out_links(Page *page, int num_out_links) {
     page->num_out_links = num_out_links;
 }
@@ -59,13 +93,18 @@ void page_set_num_in_links(Page *page, int num_in_links) {
     page->num_in_links = num_in_links;
 }
 
-void page_insert_in_link(Page *page, char *page_name) {
-    page->in_links = RBT_insert(page->in_links, page_name, SPECIAL_NULL_VALUE, strcmp);
+void page_insert_in_link(Page *page, Page *in) {
+    page->in_links = RBT_insert(page->in_links, page_get_name(in), in, strcmp);
     page->num_in_links++;
 }
 
-void page_insert_out_link(Page *page, char *page_name) {
-    page->out_links = RBT_insert(page->out_links, page_name, SPECIAL_NULL_VALUE, strcmp);
+void page_insert_out_link(Page *page, Page *out) {
+    page->out_links = RBT_insert(page->out_links, page_get_name(out), out, strcmp);
+}
+
+
+void page_update_last_page_rank(Page *page) {
+    page->last_page_rank = page->page_rank;
 }
 
 void page_print(Page *page) {
