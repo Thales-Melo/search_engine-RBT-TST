@@ -2,17 +2,17 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../include/stop_word.h"
 #include "../include/types.h"
 #include "../include/utils.h"
 #include "../include/string_map.h"
-#include "../include/rbt.h"
+#include "../include/page.h"
+
 
 #define PAGE_DIR "pages"
 #define INDEX_DIR "index.txt"
 
 struct StringMap {
-    RBT *map; // Key: word, value: RBT com as páginas que contém a palavra
+    RBT *map; // Key: word, value: RBT com as páginas que contém a palavra => RBT Key: page_name, Value: page
 };
 
 StringMap *string_map_construct() {
@@ -36,8 +36,8 @@ void string_map_destruct(StringMap *sm) {
     free(sm);
 }
 
-RBT *string_map_search(StringMap *sm, const char *word) {
-    return (RBT*) RBT_search(sm->map, (char *)word, strcmp);
+RBT *string_map_search(StringMap *sm, char *word) {
+    return (RBT*) RBT_search(sm->map, word, strcmp);
 }
 
 void string_map_print(StringMap *sm) {
@@ -54,16 +54,17 @@ void string_map_print(StringMap *sm) {
     RBT_iterator_destroy(iter);
 }
 
-void string_map_insert(RBT *sm_map, RBT *pages, char *page_name, char *word) {
+void string_map_insert(RBT *sm_map, RBT *pages, Page *page, char *word) {
     // Se a página não estiver no RBT da palavra, inserir
+    char *page_name = page_get_name(page);
     if (!RBT_contains_key(pages, page_name, strcmp)) {
         //printf("Inserindo %s em %s\n", page_name, word_token);
-        pages = RBT_insert(pages, page_name, SPECIAL_NULL_VALUE, strcmp);
+        pages = RBT_insert(pages, page_name, page, strcmp);
         sm_map = RBT_insert(sm_map, word, pages, strcmp);
     }
 }
 
-StringMap *string_map_build(char *main_dir, StopWord *stop_words) {
+StringMap *string_map_build(char *main_dir, StopWord *stop_words, PageMap *pm, int *num_pages) {
     StringMap *sm = string_map_construct();
     
     char index_dir[256];
@@ -71,19 +72,20 @@ StringMap *string_map_build(char *main_dir, StopWord *stop_words) {
     FILE *index_file = fopen(index_dir, "r");
     if (index_file == NULL)
         exit(printf("Error string_map_build: failed to open file: %s\n", index_dir));
-
+    
     char *page_name = NULL, *line_from_page = NULL;
     size_t size_p = 0, size_l = 0;
     ssize_t read_p = 0, read_l = 0;
 
     while(read_p = (getline(&page_name, &size_p, index_file)) != -1) {
         page_name = strtok(page_name, " \n");
-
+        
         char page_dir[256];
         sprintf(page_dir, "exemplo/pages/%s", page_name);
         FILE *page_file = fopen(page_dir, "r");
         if (page_file == NULL)
             exit(printf("Error string_map_build: failed to open file: %s\n", page_dir));
+        *num_pages += 1;
 
         while(read_l = getline(&line_from_page, &size_l, page_file) != -1) {
             if (line_from_page[read_l - 1] == '\n')
@@ -104,7 +106,12 @@ StringMap *string_map_build(char *main_dir, StopWord *stop_words) {
                     }
 
                     // Inserir a página no RBT da palavra (se já não estiver)
-                    string_map_insert(sm->map, pages, page_name, word_token);
+                    string_map_insert(
+                        sm->map, 
+                        pages, 
+                        page_map_get_page(pm, page_name), 
+                        word_token
+                    );
                 }
                 word_token = strtok(NULL, " \n\t");
             }

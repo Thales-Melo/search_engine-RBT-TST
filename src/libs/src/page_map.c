@@ -2,8 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../include/page.h"
-#include "../include/rbt.h"
 #include "../include/page_map.h"
 
 #define GRAPH_DIR "graph.txt"
@@ -38,6 +36,10 @@ void page_map_print(PageMap *pm) {
         RBT_iterator_next(it);
     }
     RBT_iterator_destroy(it);
+}
+
+RBT *page_map_get_pages(PageMap *pm) {
+    return pm->pages;
 }
 
 PageMap *build_link_pages(char *main_dir) {
@@ -76,9 +78,6 @@ PageMap *build_link_pages(char *main_dir) {
                 page_set_num_out_links(current_page, atoi(token));
             } else {
                 // Páginas que a página atual aponta, ou seja, páginas de saída
-                
-                // Inserir as páginas de saída
-                page_insert_out_link(current_page, token);
 
                 // Pegar a página de destino
                 page_dest = page_map_get_page(pm, token);
@@ -87,11 +86,14 @@ PageMap *build_link_pages(char *main_dir) {
                     page_dest = page_construct(token);
                     pm->pages = RBT_insert(pm->pages, token, page_dest, strcmp);
                 }
+
+                // Inserir as páginas de saída
+                page_insert_out_link(current_page, page_dest);
                 
                 // Pegar a lista de páginas de entrada da página de destino
                 dest_in_pages = page_get_in_links(page_dest);
                 // Inserir a current_page na lista de páginas de entrada da página de destino
-                page_insert_in_link(page_dest, page_get_name(current_page));
+                page_insert_in_link(page_dest, current_page);
             }
             token = strtok(NULL, " \n");
             tok_counter++;
