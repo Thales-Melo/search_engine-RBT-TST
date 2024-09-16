@@ -19,7 +19,7 @@ void rec_destruct(TST* t, void (*free_value)(Value)) {
     rec_destruct(t->l, free_value);
     rec_destruct(t->m, free_value);
     rec_destruct(t->r, free_value);
-    if (free_value != NULL)
+    if (free_value != NULL && t->val != SPECIAL_NULL_VALUE)
         free_value(t->val);
     free(t);
 }
@@ -92,4 +92,44 @@ void rec_print_keys(TST* t, char* prefix, int d) {
 void TST_print_keys(TST* t) {
     char prefix[100];
     rec_print_keys(t, prefix, 0);
+}
+
+
+struct TSTIterator {
+    TST *stack[100]; // Pilha para armazenar os nós
+    int top;         // Índice do topo da pilha
+};
+
+
+TSTIterator* TST_iterator_create(TST* root) {
+    TSTIterator *it = (TSTIterator*) malloc(sizeof(TSTIterator));
+    it->top = -1;
+
+    if (root != NULL)
+        it->stack[++(it->top)] = root;
+    
+    return it;
+}
+
+bool TST_iterator_has_next(TSTIterator* it) {
+    return it->top != -1;
+}
+
+Value TST_iterator_next(TSTIterator* it) {
+    while (it->top != -1) {
+        TST *current = it->stack[it->top--];
+
+        if (current->r != NULL)     it->stack[++(it->top)] = current->r;
+        if (current->m != NULL)     it->stack[++(it->top)] = current->m;
+        if (current->l != NULL)     it->stack[++(it->top)] = current->l;
+
+        if (current->val != NULL_Value) 
+            return current->val;
+    }
+
+    return NULL_Value;
+}
+
+void TST_iterator_destroy(TSTIterator* it) {
+    free(it);
 }

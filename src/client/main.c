@@ -30,8 +30,8 @@ int main(int argc, char *argv[]) {
     run_search_engine(sm, stop_words, num_pages);
 
     stop_word_destruct(stop_words);
-    string_map_destruct(sm);
     page_map_destruct(pm);
+    string_map_destruct(sm);
         
     #ifdef DEBUG_MODE
     end = clock();

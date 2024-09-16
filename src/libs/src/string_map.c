@@ -6,61 +6,46 @@
 #include "../include/utils.h"
 #include "../include/string_map.h"
 #include "../include/page.h"
+#include "../include/tst.h"
 
 
 #define PAGE_DIR "pages"
 #define INDEX_DIR "index.txt"
 
 struct StringMap {
-    RBT *map; // Key: word, value: RBT com as páginas que contém a palavra => RBT Key: page_name, Value: page
+    TST *map; // Key: word, value: RBT com as páginas que contém a palavra => RBT Key: page_name, Value: page
 };
 
 StringMap *string_map_construct() {
     StringMap *sm = malloc(sizeof(StringMap));
     if (sm == NULL)
         exit(printf("Error: string_map_construct: could not allocate memory.\n"));
-    sm->map = RBT_construct();
+    sm->map = TST_construct();
     return sm;
 }
 
 void string_map_destruct(StringMap *sm) {
-    // Iterar sobre o RBT e destruir cada RBT de páginas
-    RBTIterator *iter = RBT_iterator_create(sm->map);
-    while (RBT_iterator_valid(iter)) {
-        RBT *pages = (RBT*) RBT_iterator_value(iter);
+    TSTIterator *iter = TST_iterator_create(sm->map);
+    while(TST_iterator_has_next(iter)) {
+        // Desalocar apenas a RBT, pois as páginas são desalocadas no PageMap
+        RBT *pages = (RBT *) TST_iterator_next(iter);
         RBT_destruct(pages, NULL);
-        RBT_iterator_next(iter);
     }
-    RBT_iterator_destroy(iter);
-    RBT_destruct(sm->map, NULL);
+    TST_iterator_destroy(iter);
+    TST_destruct(sm->map, NULL);
     free(sm);
 }
 
 RBT *string_map_search(StringMap *sm, char *word) {
-    return (RBT*) RBT_search(sm->map, word, strcmp);
+    return (RBT*) TST_search(sm->map, word);
 }
 
-void string_map_print(StringMap *sm) {
-    // Iterar sobre o RBT e imprimir cada palavra e suas páginas
-    RBTIterator *iter = RBT_iterator_create(sm->map);
-    while (RBT_iterator_valid(iter)) {
-        char *word = RBT_iterator_key(iter);
-        printf("Key %s\n", word);
-        RBT *pages = (RBT*) RBT_iterator_value(iter);
-        RBT_print_keys(pages);
-        printf("\n");
-        RBT_iterator_next(iter);
-    }
-    RBT_iterator_destroy(iter);
-}
-
-void string_map_insert(RBT *sm_map, RBT *pages, Page *page, char *word) {
+void string_map_insert(TST *sm_map, RBT *pages, Page *page, char *word) {
     // Se a página não estiver no RBT da palavra, inserir
     char *page_name = page_get_name(page);
     if (!RBT_contains_key(pages, page_name, strcmp)) {
-        //printf("Inserindo %s em %s\n", page_name, word_token);
         pages = RBT_insert(pages, page_name, page, strcmp);
-        sm_map = RBT_insert(sm_map, word, pages, strcmp);
+        sm_map = TST_insert(sm_map, word, pages);
     }
 }
 
@@ -102,7 +87,7 @@ StringMap *string_map_build(char *main_dir, StopWord *stop_words, PageMap *pm, i
 
                     // Se a palavra não estiver no mapa, criar um novo RBT para as páginas
                     if (pages == NULL) {
-                        sm->map = RBT_insert(sm->map, word_token, pages, strcmp);
+                        sm->map = TST_insert(sm->map, word_token, pages);
                     }
 
                     // Inserir a página no RBT da palavra (se já não estiver)
@@ -122,7 +107,5 @@ StringMap *string_map_build(char *main_dir, StopWord *stop_words, PageMap *pm, i
     free(line_from_page);
     fclose(index_file);
     printf("String map built.\n");
-    //RBT_print_keys(sm->map);
-    //string_map_print(sm);
     return sm;
 }
