@@ -101,6 +101,5 @@ PageMap *build_link_pages(char *main_dir) {
     }
     free(line);
     fclose(file);
-    printf("PageMap built.\n");
     return pm;
 }

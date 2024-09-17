@@ -21,7 +21,6 @@ int main(int argc, char *argv[]) {
     #endif
 
     int num_pages = 0;
-
     StopWord *stop_words = stop_word_read(argv[1]);
     PageMap *pm = build_link_pages(argv[1]);
     StringMap *sm = string_map_build(argv[1], stop_words, pm, &num_pages);

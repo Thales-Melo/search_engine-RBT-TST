@@ -26,3 +26,9 @@ void apply_to_all_pages(RBT *pages, Func function, void *argument) {
     }
     RBT_iterator_destroy(it);
 }
+
+void remove_newline(char *str) {
+    int len = strlen(str);
+    if (str[len - 1] == '\n')
+        str[len - 1] = '\0';
+}

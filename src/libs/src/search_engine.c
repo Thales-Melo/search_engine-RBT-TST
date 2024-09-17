@@ -29,11 +29,10 @@ void process_intersection(void *page, void *argument) {
 }
 
 void display_search_results(char *query, Page **pages, int total_pages, int expected_intersection_count) {
-    printf("search: %s\n", query);
-    printf("pages: ");
-
-    int printed_pages = 0;
+    printf("search:%s\n", query);
     
+    printf("pages:");
+    int printed_pages = 0;
     // Itera pelo vetor de páginas para imprimir as que fazem parte da interseção esperada
     for (int i = 0; i < total_pages; i++) {
         Page *p = pages[i];
@@ -46,8 +45,7 @@ void display_search_results(char *query, Page **pages, int total_pages, int expe
         }
     }
 
-    printf("\npr: ");
-    
+    printf("\npr:");
     // Itera novamente para imprimir o PageRank das páginas que fazem parte da interseção
     for (int i = 0; i < total_pages; i++) {
         Page *p = pages[i];
@@ -77,6 +75,7 @@ void run_search_engine(StringMap *sm, StopWord *stop_words, int num_pages) {
 
     while (getline(&buffer, &buffer_size, stdin) != -1) {
         query = strdup(buffer);
+        remove_newline(query);
 
         int num_terms = 0; // Contador de termos válidos
         token = strtok(buffer, " \n");

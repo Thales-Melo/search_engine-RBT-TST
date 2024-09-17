@@ -58,7 +58,6 @@ void string_map_insert(RBT *sm_map, RBT *pages, Page *page, char *word) {
     // Se a página não estiver no RBT da palavra, inserir
     char *page_name = page_get_name(page);
     if (!RBT_contains_key(pages, page_name, strcmp)) {
-        //printf("Inserindo %s em %s\n", page_name, word_token);
         pages = RBT_insert(pages, page_name, page, strcmp);
         sm_map = RBT_insert(sm_map, word, pages, strcmp);
     }
@@ -88,9 +87,7 @@ StringMap *string_map_build(char *main_dir, StopWord *stop_words, PageMap *pm, i
         *num_pages += 1;
 
         while(read_l = getline(&line_from_page, &size_l, page_file) != -1) {
-            if (line_from_page[read_l - 1] == '\n')
-                line_from_page[read_l - 1] = '\0';
-
+            remove_newline(line_from_page);
             char *word_token = strtok(line_from_page, " \n\t");
             while(word_token != NULL) {
                 string_to_lower(word_token);
@@ -121,8 +118,5 @@ StringMap *string_map_build(char *main_dir, StopWord *stop_words, PageMap *pm, i
     free(page_name);
     free(line_from_page);
     fclose(index_file);
-    printf("String map built.\n");
-    //RBT_print_keys(sm->map);
-    //string_map_print(sm);
     return sm;
 }

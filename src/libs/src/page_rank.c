@@ -65,6 +65,4 @@ void calculate_page_ranks(int num_pages, PageMap *pm) {
         apply_to_all_pages(pages, update_last_page_rank, NULL);
         data[1] /= data[0];
     }
-
-    printf("PageRank calculado\n");
 }
