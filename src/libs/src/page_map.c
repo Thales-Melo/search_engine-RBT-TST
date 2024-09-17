@@ -10,6 +10,7 @@ struct PageMap {
     RBT *pages; // <Key: page_name, Value: Page*>
 };
 
+
 PageMap* page_map_construct() {
     PageMap *pm = (PageMap*) malloc(sizeof(PageMap));
     if (pm == NULL)

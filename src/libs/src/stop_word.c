@@ -11,6 +11,7 @@ struct StopWord {
     TST *sw; // <Key: char*, Value: SPECIAL_NULL_VALUE>
 };
 
+
 StopWord* stop_word_construct() {
     StopWord *sw = (StopWord*) malloc(sizeof(StopWord));
     if (sw == NULL)

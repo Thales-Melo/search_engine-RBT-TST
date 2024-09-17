@@ -4,7 +4,6 @@
 
 #include "../include/page.h"
 
-
 #define INDEX_DIR "index.txt"
 
 struct Page {

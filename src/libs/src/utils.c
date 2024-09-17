@@ -7,6 +7,7 @@
 #include "../include/utils.h"
 #include "../include/page.h"
 
+
 void string_to_lower(char *str) {
     for (int i = 0; str[i] != '\0'; i++)
         str[i] = tolower(str[i]);
@@ -18,13 +19,13 @@ double fabs(double x) {
 }
 
 void apply_to_all_pages(RBT *pages, Func function, void *argument) {
-    RBTIterator *it = RBT_iterator_create(pages);
+    RBTIterator *it = RBT_iterator_construct(pages);
     while (RBT_iterator_valid(it)) {
         Page *page = (Page *)RBT_iterator_value(it);
         function(page, argument);
         RBT_iterator_next(it);
     }
-    RBT_iterator_destroy(it);
+    RBT_iterator_destruct(it);
 }
 
 void remove_newline(char *str) {

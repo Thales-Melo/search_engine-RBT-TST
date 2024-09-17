@@ -10,6 +10,7 @@ struct node {
     TST *l, *m, *r;
 };
 
+
 TST *TST_construct() {
     return NULL;
 }

@@ -39,7 +39,6 @@ void compute_page_rank(void *page, void *data) {
     
     pr = ALPHA * pr + (1 - ALPHA) / num_pages;
     page_set_page_rank(p, pr);
-
     *difference += fabs(pr - page_get_last_page_rank(p));
 }
 
@@ -51,12 +50,11 @@ void update_last_page_rank(void *page, void *unused) {
 void calculate_page_ranks(int num_pages, PageMap *pm) {
     double initial_pr = 1.0 / (double)num_pages;
     RBT *pages = page_map_get_all_pages(pm);
-
     apply_to_all_pages(pages, initialize_page_rank, &initial_pr);
 
-    double data[2]; // data[0] = num_pages, data[1] = difference
+    double data[2];
     data[0] = (double)num_pages;
-    data[1] = 1.0;
+    data[1] = 1.0; // Diferença inicial
 
     // Iteração até convergência
     while (data[1] >= PGR_LIMIT) {

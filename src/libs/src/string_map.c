@@ -15,6 +15,7 @@ struct StringMap {
     RBT *map; // Key: word, value: RBT com as páginas que contém a palavra => Key: page_name, Value: Page*
 };
 
+
 StringMap *string_map_construct() {
     StringMap *sm = malloc(sizeof(StringMap));
     if (sm == NULL)
@@ -35,7 +36,7 @@ RBT *string_map_search(StringMap *sm, char *word) {
 
 void string_map_print(StringMap *sm) {
     // Iterar sobre o RBT e imprimir cada palavra e suas páginas
-    RBTIterator *iter = RBT_iterator_create(sm->map);
+    RBTIterator *iter = RBT_iterator_construct(sm->map);
     while (RBT_iterator_valid(iter)) {
         char *word = RBT_iterator_key(iter);
         printf("Key %s\n", word);
@@ -44,7 +45,7 @@ void string_map_print(StringMap *sm) {
         printf("\n");
         RBT_iterator_next(iter);
     }
-    RBT_iterator_destroy(iter);
+    RBT_iterator_destruct(iter);
 }
 
 void string_map_insert(RBT *sm_map, RBT *pages, Page *page, char *word) {
