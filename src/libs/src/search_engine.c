@@ -15,7 +15,7 @@ void process_intersection(void *page, void *argument) {
     int *index = (int *) args[1];
 
     Page *p = (Page *) page;
-    int intersec_counter = page_get_intersection_counter(p); // Contador de interseções da página
+    int intersec_counter = page_get_intersection_counter(p);
 
     // Se a página ainda não fez parte de nenhuma interseção
     if (intersec_counter == 0) {
@@ -62,8 +62,10 @@ void display_search_results(char *query, Page **pages, int total_pages, int expe
 void run_search_engine(StringMap *sm, StopWord *stop_words, int num_pages) {
     char *buffer = NULL, *query = NULL, *token = NULL;
     size_t buffer_size = 0;
-    Page **intersection_pages = calloc(num_pages, sizeof(Page *));
     int intersection_index = 0;
+    Page **intersection_pages = calloc(num_pages, sizeof(Page *));
+    if (intersection_pages == NULL)
+        exit(printf("Error run_search_engine: failed to allocate memory.\n"));
     void *args[2] = {intersection_pages, &intersection_index};
 
     while (getline(&buffer, &buffer_size, stdin) != -1) {
