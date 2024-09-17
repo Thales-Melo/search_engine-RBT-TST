@@ -4,7 +4,6 @@
 
 #include "../include/page.h"
 
-
 #define INDEX_DIR "index.txt"
 
 struct Page {
@@ -104,11 +103,6 @@ void page_insert_out_link(Page *page, Page *out) {
 
 void page_update_last_page_rank(Page *page) {
     page->last_page_rank = page->page_rank;
-}
-
-void page_print(Page *page) {
-    // Impressão das paginas de saida
-    RBT_print_keys(page->out_links);
 }
 
 int pages_comparator(const void *p1, const void *p2) {

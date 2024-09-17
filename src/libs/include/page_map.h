@@ -48,6 +48,6 @@ Page* page_map_get_page(PageMap *pm, char *page_name);
  * @param pm Um ponteiro para o mapa de páginas.
  * @return Um ponteiro para a árvore rubro-negra contendo todas as páginas.
  */
-RBT *page_map_get_pages(PageMap *pm);
+RBT *page_map_get_all_pages(PageMap *pm);
 
 #endif // _PAGE_MAP_H_

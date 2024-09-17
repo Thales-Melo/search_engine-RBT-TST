@@ -7,6 +7,6 @@ clean:
 debug:
 	gcc $(CFLAGS) -DDEBUG_MODE -o trab3 src/client/main.c src/libs/src/*.c
 run:
-	./trab3 exemplo
+	./trab3 exemplo < exemplo/searches.txt > output.txt
 valgrind:
-	valgrind --track-origins=yes --leak-check=full ./trab3 exemplo
+	valgrind --track-origins=yes --leak-check=full ./trab3 exemplo < exemplo/searches.txt > output.txt

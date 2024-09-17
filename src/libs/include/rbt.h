@@ -85,7 +85,7 @@ typedef struct RBTIterator RBTIterator;
  * @param root Um ponteiro para a raiz da árvore RBT.
  * @return Um ponteiro para o iterador criado.
  */
-RBTIterator* RBT_iterator_create(RBT *root);
+RBTIterator* RBT_iterator_construct(RBT *root);
 
 /**
  * @brief Obtém o valor atual do iterador.
@@ -134,6 +134,6 @@ char* RBT_iterator_key(RBTIterator *iter);
  *
  * @param iter Um ponteiro para o iterador a ser destruído.
  */
-void RBT_iterator_destroy(RBTIterator *iter);
+void RBT_iterator_destruct(RBTIterator *iter);
 
 #endif // _RBT_H_

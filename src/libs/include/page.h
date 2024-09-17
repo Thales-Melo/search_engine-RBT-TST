@@ -187,15 +187,6 @@ void page_insert_out_link(Page *page, Page *out);
 void page_update_last_page_rank(Page *page);
 
 /**
- * @brief Imprime as informações de uma página.
- *
- * Esta função imprime as informações da página, incluindo seus links de saída.
- *
- * @param page Um ponteiro para a página.
- */
-void page_print(Page *page);
-
-/**
  * @brief Compara duas páginas com base em seus valores de PageRank.
  *
  * Esta função compara duas páginas e retorna um valor indicando a ordem relativa
