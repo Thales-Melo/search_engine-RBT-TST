@@ -129,9 +129,8 @@ RBTIterator* RBT_iterator_create(RBT *root) {
 }
 
 bool RBT_iterator_next(RBTIterator *iter) {
-    if (iter->current == NULL) {
+    if (iter->current == NULL) 
         return false;
-    }
 
     if (iter->current->r != NULL) {
         iter->current = iter->current->r;
@@ -141,7 +140,6 @@ bool RBT_iterator_next(RBTIterator *iter) {
                 iter->stack = (RBT**) realloc(iter->stack, iter->stack_capacity * sizeof(RBT*));
                 if (iter->stack == NULL)
                     exit(printf("Error: Failed to reallocate memory for RBTIterator stack.\n"));
-            
             }
             iter->stack[iter->stack_size++] = iter->current;
             iter->current = iter->current->l;
@@ -156,11 +154,7 @@ bool RBT_iterator_next(RBTIterator *iter) {
 }
 
 Value RBT_iterator_value(RBTIterator *iter) {
-    if (iter->current == NULL) {
-        printf("Error: Invalid iterator.\n");
-        return NULL;
-    }
-    return iter->current->value;
+    return iter->current == NULL ? NULL : iter->current->value;
 }
 
 bool RBT_iterator_valid(RBTIterator *iter) {
@@ -168,11 +162,7 @@ bool RBT_iterator_valid(RBTIterator *iter) {
 }
 
 char* RBT_iterator_key(RBTIterator *iter) {
-    if (iter->current == NULL) {
-        printf("Error: Invalid iterator.\n");
-        return NULL;
-    }
-    return iter->current->key;
+    return iter->current == NULL ? NULL : iter->current->key;
 }
 
 void RBT_iterator_destroy(RBTIterator *iter) {

@@ -106,11 +106,6 @@ void page_update_last_page_rank(Page *page) {
     page->last_page_rank = page->page_rank;
 }
 
-void page_print(Page *page) {
-    // Impressão das paginas de saida
-    RBT_print_keys(page->out_links);
-}
-
 int pages_comparator(const void *p1, const void *p2) {
     Page* (*page1) = (Page**) p1;
     Page* (*page2) = (Page**) p2;

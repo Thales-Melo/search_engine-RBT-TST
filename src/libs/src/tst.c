@@ -19,7 +19,7 @@ void rec_destruct(TST* t, void (*free_value)(Value)) {
     rec_destruct(t->l, free_value);
     rec_destruct(t->m, free_value);
     rec_destruct(t->r, free_value);
-    if (free_value != NULL)
+    if (free_value != NULL && t->val != NULL_Value)
         free_value(t->val);
     free(t);
 }

@@ -50,7 +50,7 @@ void update_last_page_rank(void *page, void *unused) {
 
 void calculate_page_ranks(int num_pages, PageMap *pm) {
     double initial_pr = 1.0 / (double)num_pages;
-    RBT *pages = page_map_get_pages(pm);
+    RBT *pages = page_map_get_all_pages(pm);
 
     apply_to_all_pages(pages, initialize_page_rank, &initial_pr);
 
