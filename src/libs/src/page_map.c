@@ -58,8 +58,7 @@ PageMap *build_link_pages(char *main_dir) {
                     //Se a página ainda não existe, criar uma nova
                     current_page = page_construct(token);
                     pm->pages = RBT_insert(pm->pages, token, current_page, strcmp);
-                } 
-            // Pegar a lista de páginas de saída
+                }
             } 
             else if (tok_counter == 1) {
                 //Setar a quantidade de links de saída
@@ -76,8 +75,6 @@ PageMap *build_link_pages(char *main_dir) {
 
                 // Inserir as páginas de saída
                 page_insert_out_link(current_page, page_dest);
-                
-                // Pegar a lista de páginas de entrada da página de destino
                 
                 // Inserir a current_page na lista de páginas de entrada da página de destino
                 page_insert_in_link(page_dest, current_page);
