@@ -59,12 +59,13 @@ PageMap *build_link_pages(char *main_dir) {
                     current_page = page_construct(token);
                     pm->pages = RBT_insert(pm->pages, token, current_page, strcmp);
                 } 
-                // Pegar a lista de páginas de saída
-                // out_pages = page_get_out_links(current_page);
-            } else if (tok_counter == 1) {
+            // Pegar a lista de páginas de saída
+            } 
+            else if (tok_counter == 1) {
                 //Setar a quantidade de links de saída
                 page_set_num_out_links(current_page, atoi(token));
-            } else {
+            } 
+            else {
                 // Pegar a página de destino
                 page_dest = page_map_get_page(pm, token);
                 if (page_dest == NULL) {
@@ -77,7 +78,6 @@ PageMap *build_link_pages(char *main_dir) {
                 page_insert_out_link(current_page, page_dest);
                 
                 // Pegar a lista de páginas de entrada da página de destino
-                // dest_in_pages = page_get_in_links(page_dest);
                 
                 // Inserir a current_page na lista de páginas de entrada da página de destino
                 page_insert_in_link(page_dest, current_page);
