@@ -70,16 +70,16 @@ StringMap *string_map_build(char *main_dir, StopWord *stop_words, PageMap *pm, i
     size_t size_p = 0, size_l = 0;
     ssize_t read_p = 0, read_l = 0;
 
-    while(read_p = (getline(&page_name, &size_p, index_file)) != -1) {
+    while((read_p = getline(&page_name, &size_p, index_file)) != -1) {
         page_name = strtok(page_name, " \n");
         char page_dir[256];
-        sprintf(page_dir, "exemplo/pages/%s", page_name);
+        sprintf(page_dir, "%s/pages/%s", main_dir, page_name);
         FILE *page_file = fopen(page_dir, "r");
         if (page_file == NULL)
             exit(printf("Error string_map_build: failed to open file: %s\n", page_dir));
         *num_pages += 1;
 
-        while(read_l = getline(&line_from_page, &size_l, page_file) != -1) {
+        while((read_l = getline(&line_from_page, &size_l, page_file)) != -1) {
             remove_newline(line_from_page);
             char *word_token = strtok(line_from_page, " \n\t");
             while(word_token != NULL) {
