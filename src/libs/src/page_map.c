@@ -43,12 +43,11 @@ PageMap *build_link_pages(char *main_dir) {
 
     int tok_counter = 0;
     size_t size = 0;
-    char *line = NULL, *token = NULL, *current_key = NULL;
+    char *line = NULL, *token = NULL;
     ssize_t read;
 
     Page *current_page = NULL, *page_dest = NULL;
-    RBT *current_node = NULL, *out_pages = NULL, *dest_in_pages = NULL;
-    while(read = getline(&line, &size, file) != -1) {
+    while((read = getline(&line, &size, file)) != -1) {
         token = strtok(line, " \n");
         tok_counter = 0;
         while(token) {
@@ -61,7 +60,7 @@ PageMap *build_link_pages(char *main_dir) {
                     pm->pages = RBT_insert(pm->pages, token, current_page, strcmp);
                 } 
                 // Pegar a lista de páginas de saída
-                out_pages = page_get_out_links(current_page);
+                // out_pages = page_get_out_links(current_page);
             } else if (tok_counter == 1) {
                 //Setar a quantidade de links de saída
                 page_set_num_out_links(current_page, atoi(token));
@@ -78,7 +77,7 @@ PageMap *build_link_pages(char *main_dir) {
                 page_insert_out_link(current_page, page_dest);
                 
                 // Pegar a lista de páginas de entrada da página de destino
-                dest_in_pages = page_get_in_links(page_dest);
+                // dest_in_pages = page_get_in_links(page_dest);
                 
                 // Inserir a current_page na lista de páginas de entrada da página de destino
                 page_insert_in_link(page_dest, current_page);

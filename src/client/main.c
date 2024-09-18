@@ -9,6 +9,7 @@
 #include "../libs/include/page_rank.h"
 #include "../libs/include/search_engine.h"
 
+#define MAIN_DIR argv[1]
 
 int main(int argc, char *argv[]) {
     if (argc != 2)
@@ -21,9 +22,9 @@ int main(int argc, char *argv[]) {
     #endif
 
     int num_pages = 0;
-    StopWord *stop_words = stop_word_read(argv[1]);
-    PageMap *pm = build_link_pages(argv[1]);
-    StringMap *sm = string_map_build(argv[1], stop_words, pm, &num_pages);
+    StopWord *stop_words = stop_word_read(MAIN_DIR);
+    PageMap *pm = build_link_pages(MAIN_DIR);
+    StringMap *sm = string_map_build(MAIN_DIR, stop_words, pm, &num_pages);
 
     calculate_page_ranks(num_pages, pm);
     run_search_engine(sm, stop_words, num_pages);

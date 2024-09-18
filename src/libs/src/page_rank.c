@@ -43,6 +43,7 @@ void compute_page_rank(void *page, void *data) {
 }
 
 void update_last_page_rank(void *page, void *unused) {
+    (void)unused;
     Page *p = (Page *)page;
     page_update_last_page_rank(p);
 }
