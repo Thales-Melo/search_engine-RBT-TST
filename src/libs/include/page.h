@@ -195,8 +195,8 @@ void page_update_last_page_rank(Page *page);
  * @param p1 Um ponteiro para a primeira página.
  * @param p2 Um ponteiro para a segunda página.
  * @return Um valor negativo se a primeira página tiver um PageRank maior,
- *         um valor positivo se a segunda página tiver um PageRank maior,
- *         ou zero se ambos os PageRanks forem iguais.
+ *         um valor positivo se a segunda página tiver um PageRank maior
+ *         e em caso de empate, desempata por ordem alfabética.
  */
 int pages_comparator(const void *p1, const void *p2);
 
