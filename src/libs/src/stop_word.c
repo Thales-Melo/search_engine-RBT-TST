@@ -11,6 +11,7 @@ struct StopWord {
     TST *sw; // <Key: char*, Value: SPECIAL_NULL_VALUE>
 };
 
+
 StopWord* stop_word_construct() {
     StopWord *sw = (StopWord*) malloc(sizeof(StopWord));
     if (sw == NULL)
@@ -49,15 +50,12 @@ StopWord *stop_word_read(char *main_dir) {
     size_t len = 0;
     ssize_t read;
     while ((read = getline(&line, &len, file)) != -1) {
-        if (line[read - 1] == '\n')
-            line[read - 1] = '\0'; // Remove '\n'
+        remove_newline(line);
         string_to_lower(line);
         stop_word_insert(stop_word, line);
     }
 
     free(line);
     fclose(file);
-    printf("Stop words read.\n");
-    //stop_word_print(stop_word);
     return stop_word;
 }

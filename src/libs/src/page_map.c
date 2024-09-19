@@ -10,6 +10,7 @@ struct PageMap {
     RBT *pages; // <Key: page_name, Value: Page*>
 };
 
+
 PageMap* page_map_construct() {
     PageMap *pm = (PageMap*) malloc(sizeof(PageMap));
     if (pm == NULL)
@@ -27,18 +28,7 @@ Page* page_map_get_page(PageMap *pm, char *page_name) {
     return (Page*) RBT_search(pm->pages, page_name, strcmp);
 }
 
-void page_map_print(PageMap *pm) {
-    RBTIterator *it = RBT_iterator_create(pm->pages);
-    while(RBT_iterator_valid(it)) {
-        Page *page = (Page*) RBT_iterator_value(it);
-        printf("Page %s", RBT_iterator_key(it));
-        page_print(page);
-        RBT_iterator_next(it);
-    }
-    RBT_iterator_destroy(it);
-}
-
-RBT *page_map_get_pages(PageMap *pm) {
+RBT *page_map_get_all_pages(PageMap *pm) {
     return pm->pages;
 }
 
@@ -53,12 +43,11 @@ PageMap *build_link_pages(char *main_dir) {
 
     int tok_counter = 0;
     size_t size = 0;
-    char *line = NULL, *token = NULL, *current_key = NULL;
+    char *line = NULL, *token = NULL;
     ssize_t read;
 
     Page *current_page = NULL, *page_dest = NULL;
-    RBT *current_node = NULL, *out_pages = NULL, *dest_in_pages = NULL;
-    while(read = getline(&line, &size, file) != -1) {
+    while((read = getline(&line, &size, file)) != -1) {
         token = strtok(line, " \n");
         tok_counter = 0;
         while(token) {
@@ -69,16 +58,13 @@ PageMap *build_link_pages(char *main_dir) {
                     //Se a página ainda não existe, criar uma nova
                     current_page = page_construct(token);
                     pm->pages = RBT_insert(pm->pages, token, current_page, strcmp);
-                } 
-                // Pegar a lista de páginas de saída
-                out_pages = page_get_out_links(current_page);
-            } else if (tok_counter == 1) {
-                // Numero de links de saída. 
+                }
+            } 
+            else if (tok_counter == 1) {
                 //Setar a quantidade de links de saída
                 page_set_num_out_links(current_page, atoi(token));
-            } else {
-                // Páginas que a página atual aponta, ou seja, páginas de saída
-
+            } 
+            else {
                 // Pegar a página de destino
                 page_dest = page_map_get_page(pm, token);
                 if (page_dest == NULL) {
@@ -90,8 +76,6 @@ PageMap *build_link_pages(char *main_dir) {
                 // Inserir as páginas de saída
                 page_insert_out_link(current_page, page_dest);
                 
-                // Pegar a lista de páginas de entrada da página de destino
-                dest_in_pages = page_get_in_links(page_dest);
                 // Inserir a current_page na lista de páginas de entrada da página de destino
                 page_insert_in_link(page_dest, current_page);
             }
@@ -101,6 +85,5 @@ PageMap *build_link_pages(char *main_dir) {
     }
     free(line);
     fclose(file);
-    printf("PageMap built.\n");
     return pm;
 }

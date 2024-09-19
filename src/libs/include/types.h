@@ -10,6 +10,6 @@
 #define RED true
 #define BLACK false
 typedef int (*CompareFunc)(const char *v1, const char *v2);
-typedef void (*Func)(void *value, void *argument);;
+typedef void (*Func)(void *value, void *argument);
 
 #endif // _TYPES_H_)

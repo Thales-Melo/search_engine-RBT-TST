@@ -36,4 +36,13 @@ void apply_to_all_pages(RBT *pages, Func function, void *argument);
  */
 double fabs(double x);
 
+/**
+ * @brief Remove o caractere de nova linha de uma string.
+ *
+ * Esta função remove o caractere de nova linha de uma string, caso ele exista.
+ *
+ * @param str A string a ser modificada.
+ */
+void remove_newline(char *str);
+
 #endif // _UTILS_H_

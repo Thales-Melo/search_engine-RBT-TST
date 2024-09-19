@@ -1,5 +1,6 @@
 trab3
 .vscode
+output.txt
 
 # Prerequisites
 *.d
@@ -54,3 +55,4 @@ Module.symvers
 Mkfile.old
 dkms.conf
 trab3_debug
+luiz-sample-large
