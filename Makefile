@@ -1,4 +1,4 @@
-CFLAGS = -Wall -Wextra -Werror -pedantic -g
+CFLAGS = -Wall -Wextra
 
 all:
 	gcc $(CFLAGS) -o trab3 src/client/main.c src/libs/src/*.c
