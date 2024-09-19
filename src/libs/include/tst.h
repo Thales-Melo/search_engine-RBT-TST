@@ -9,6 +9,8 @@
  */
 typedef struct node TST;
 
+typedef struct TSTIterator TSTIterator;
+
 /**
  * @brief Constrói uma nova árvore ternária de busca (TST).
  *
@@ -68,5 +70,45 @@ bool TST_contains(TST* t, const char* key);
  * @param t Um ponteiro para a árvore TST.
  */
 void TST_print_keys(TST* t);
+
+/**
+ * @brief Cria um iterador para a árvore ternária de busca (TST).
+ * 
+ * Esta função cria um iterador para percorrer a árvore TST.
+ * 
+ * @param root Um ponteiro para a raiz da árvore TST.
+ */
+TSTIterator* TST_iterator_create(TST* root);
+
+/**
+ * @brief Verifica se o iterador tem um próximo nó.
+ * 
+ * Esta função verifica se o iterador tem um próximo nó para ser acessado.
+ * 
+ * @param it Um ponteiro para o iterador.
+ * @return true se houver um próximo nó, false caso contrário.
+ */
+bool TST_iterator_has_next(TSTIterator* it);
+
+
+/**
+ * @brief Obtém o valor associado ao próximo nó do iterador.
+ * 
+ * Esta função retorna o valor associado ao próximo nó do iterador.
+ * 
+ * @param it Um ponteiro para o iterador.
+ * @return O valor associado ao próximo nó.
+ */
+Value TST_iterator_next(TSTIterator* it);
+
+
+/**
+ * @brief Destrói o iterador.
+ * 
+ * Esta função libera a memória alocada para o iterador.
+ * 
+ * @param it Um ponteiro para o iterador.
+ */
+void TST_iterator_destroy(TSTIterator* it);
 
 #endif // _TST_H_

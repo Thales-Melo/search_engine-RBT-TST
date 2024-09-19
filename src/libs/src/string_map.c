@@ -6,54 +6,46 @@
 #include "../include/utils.h"
 #include "../include/string_map.h"
 #include "../include/page.h"
+#include "../include/tst.h"
 
 
 #define PAGE_DIR "pages"
 #define INDEX_DIR "index.txt"
 
 struct StringMap {
-    RBT *map; // Key: word, value: RBT com as páginas que contém a palavra => Key: page_name, Value: Page*
+    TST *map; // Key: word, value: RBT com as páginas que contém a palavra => RBT Key: page_name, Value: page
 };
-
 
 StringMap *string_map_construct() {
     StringMap *sm = malloc(sizeof(StringMap));
     if (sm == NULL)
         exit(printf("Error: string_map_construct: could not allocate memory.\n"));
-    sm->map = RBT_construct();
+    sm->map = TST_construct();
     return sm;
 }
 
 void string_map_destruct(StringMap *sm) {
-    apply_to_all_pages(sm->map, (Func )RBT_destruct, NULL); // Pages são destruídas em page_map_destruct
-    RBT_destruct(sm->map, NULL);
+    TSTIterator *iter = TST_iterator_create(sm->map);
+    while(TST_iterator_has_next(iter)) {
+        // Desalocar apenas a RBT, pois as páginas são desalocadas no PageMap
+        RBT *pages = (RBT *) TST_iterator_next(iter);
+        RBT_destruct(pages, NULL);
+    }
+    TST_iterator_destroy(iter);
+    TST_destruct(sm->map, NULL);
     free(sm);
 }
 
 RBT *string_map_search(StringMap *sm, char *word) {
-    return (RBT*) RBT_search(sm->map, word, strcmp);
+    return (RBT*) TST_search(sm->map, word);
 }
 
-void string_map_print(StringMap *sm) {
-    // Iterar sobre o RBT e imprimir cada palavra e suas páginas
-    RBTIterator *iter = RBT_iterator_construct(sm->map);
-    while (RBT_iterator_valid(iter)) {
-        char *word = RBT_iterator_key(iter);
-        printf("Key %s\n", word);
-        RBT *pages = (RBT*) RBT_iterator_value(iter);
-        RBT_print_keys(pages);
-        printf("\n");
-        RBT_iterator_next(iter);
-    }
-    RBT_iterator_destruct(iter);
-}
-
-void string_map_insert(RBT *sm_map, RBT *pages, Page *page, char *word) {
-    // Se a página não estiver na RBT da palavra, inserir
+void string_map_insert(TST *sm_map, RBT *pages, Page *page, char *word) {
+    // Se a página não estiver no RBT da palavra, inserir
     char *page_name = page_get_name(page);
     if (!RBT_contains_key(pages, page_name, strcmp)) {
         pages = RBT_insert(pages, page_name, page, strcmp);
-        sm_map = RBT_insert(sm_map, word, pages, strcmp);
+        sm_map = TST_insert(sm_map, word, pages);
     }
 }
 
@@ -70,8 +62,9 @@ StringMap *string_map_build(char *main_dir, StopWord *stop_words, PageMap *pm, i
     size_t size_p = 0, size_l = 0;
     ssize_t read_p = 0, read_l = 0;
 
-    while((read_p = getline(&page_name, &size_p, index_file)) != -1) {
+    while((read_p = (getline(&page_name, &size_p, index_file))) != -1) {
         page_name = strtok(page_name, " \n");
+        
         char page_dir[256];
         sprintf(page_dir, "%s/pages/%s", main_dir, page_name);
         FILE *page_file = fopen(page_dir, "r");
@@ -80,7 +73,9 @@ StringMap *string_map_build(char *main_dir, StopWord *stop_words, PageMap *pm, i
         *num_pages += 1;
 
         while((read_l = getline(&line_from_page, &size_l, page_file)) != -1) {
-            remove_newline(line_from_page);
+            if (line_from_page[read_l - 1] == '\n')
+                line_from_page[read_l - 1] = '\0';
+
             char *word_token = strtok(line_from_page, " \n\t");
             while(word_token != NULL) {
                 string_to_lower(word_token);
@@ -91,9 +86,10 @@ StringMap *string_map_build(char *main_dir, StopWord *stop_words, PageMap *pm, i
                     RBT *pages = string_map_search(sm, word_token);
 
                     // Se a palavra não estiver no mapa, criar um novo RBT para as páginas
-                    if (pages == NULL) 
-                        sm->map = RBT_insert(sm->map, word_token, pages, strcmp);
-                    
+                    if (pages == NULL) {
+                        sm->map = TST_insert(sm->map, word_token, pages);
+                    }
+
                     // Inserir a página no RBT da palavra (se já não estiver)
                     string_map_insert(
                         sm->map, 
