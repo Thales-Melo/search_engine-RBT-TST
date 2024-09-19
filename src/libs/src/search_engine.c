@@ -46,12 +46,14 @@ void display_search_results(char *query, Page **pages, int total_pages, int expe
     }
 
     printf("\npr:");
+    unsigned char first_pr = 1;
     for (int i = 0; i < total_pages; i++) {
         Page *p = pages[i];
         
         if (page_get_intersection_counter(p) == expected_intersec_count && search_success) {
-            if (i > 0) printf(" ");
-            printf("%.20lf", page_get_page_rank(p));
+            if (!first_pr) printf(" ");
+            printf("%.17lf", page_get_page_rank(p));
+            first_pr = 0;
         }
         
         // Reseta o contador de interseção e o vetor de pages para preparar para a próxima consulta

@@ -106,14 +106,20 @@ void page_update_last_page_rank(Page *page) {
 }
 
 int pages_comparator(const void *p1, const void *p2) {
-    Page* (*page1) = (Page**) p1;
-    Page* (*page2) = (Page**) p2;
+    Page* page1 = *(Page**) p1;
+    Page* page2 = *(Page**) p2;
 
-    if((*page1) == NULL && (*page2) == NULL)              return 0; 
-    else if((*page1) == NULL)                             return 1; 
-    else if((*page2) == NULL)                             return -1; 
+    if (page1 == NULL && page2 == NULL) 
+        return 0;
+    else if (page1 == NULL) 
+        return 1;
+    else if (page2 == NULL) 
+        return -1;
 
-    if((*page1)->page_rank > (*page2)->page_rank)         return -1;
-    else if((*page1)->page_rank < (*page2)->page_rank)    return 1;
-    else                                                  return 0;
+    if (page1->page_rank > page2->page_rank)
+        return -1;
+    else if (page1->page_rank < page2->page_rank)
+        return 1;
+    else
+        return strcmp(page1->page_name, page2->page_name);
 }
