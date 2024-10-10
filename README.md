@@ -30,9 +30,6 @@ Para evitar esse "loop infinito" crie um arquivo `txt` coloque uma consulta (alg
 Dessa forma o programa fará a consulta e será encerrado.
 
 ## Próximos passos:
-- Otimização do código:
-    - Apesar de ser um teste pequeno, o código está rápido, porém é possível melhorar. Abaixo alguns pontos que eu acho que podem ser melhorados.
-    - O arquivo index.txt é aberto duas vezes, talvez fosse possivel fazer tudo abrindo apenas uma única vez.
-    - StringMap (estrutura que representa todas as palavras dos arquivos utilizados) utiliza uma RBT, mas se fosse representado com uma TST eu acredito que daria um salto de desempenho considerável (já que as consultas são realizadas lá), além de economizar memória.
+- Otimização do código
 - Documentação do README e dos arquivos .h (padrão doxygen).
 - Bem provável que seja possível melhorar a lógica do código, mas de início, o importante é que está funcionando e desalocando memória corretamente.
